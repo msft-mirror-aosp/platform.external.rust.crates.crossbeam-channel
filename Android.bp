@@ -44,7 +44,6 @@ license {
 
 rust_library {
     name: "libcrossbeam_channel",
-    // has rustc warnings
     host_supported: true,
     crate_name: "crossbeam_channel",
     srcs: ["src/lib.rs"],
@@ -63,5 +62,5 @@ rust_library {
 // dependent_library ["feature_list"]
 //   autocfg-1.0.1
 //   cfg-if-1.0.0
-//   crossbeam-utils-0.8.3 "lazy_static,std"
+//   crossbeam-utils-0.8.4 "lazy_static,std"
 //   lazy_static-1.4.0
