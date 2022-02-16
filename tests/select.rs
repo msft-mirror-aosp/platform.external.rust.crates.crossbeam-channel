@@ -809,7 +809,8 @@ fn stress_timeout_two_threads() {
                     thread::sleep(ms(500));
                 }
 
-                loop {
+                let done = false;
+                while !done {
                     let mut sel = Select::new();
                     let oper1 = sel.send(&s);
                     let oper = sel.select_timeout(ms(100));
@@ -833,7 +834,8 @@ fn stress_timeout_two_threads() {
                     thread::sleep(ms(500));
                 }
 
-                loop {
+                let mut done = false;
+                while !done {
                     let mut sel = Select::new();
                     let oper1 = sel.recv(&r);
                     let oper = sel.select_timeout(ms(100));
@@ -842,7 +844,7 @@ fn stress_timeout_two_threads() {
                         Ok(oper) => match oper.index() {
                             ix if ix == oper1 => {
                                 assert_eq!(oper.recv(&r), Ok(i));
-                                break;
+                                done = true;
                             }
                             _ => unreachable!(),
                         },
