@@ -486,7 +486,7 @@ pub fn select_timeout<'a>(
 
 /// Blocks until a given deadline, or until one of the operations becomes ready and selects it.
 #[inline]
-pub(crate) fn select_deadline<'a>(
+pub fn select_deadline<'a>(
     handles: &mut [(&'a dyn SelectHandle, usize, *const u8)],
     deadline: Instant,
 ) -> Result<SelectedOperation<'a>, SelectTimeoutError> {
@@ -863,6 +863,9 @@ impl<'a> Select<'a> {
     ///
     /// The selected operation must be completed with [`SelectedOperation::send`]
     /// or [`SelectedOperation::recv`].
+    ///
+    /// [`SelectedOperation::send`]: struct.SelectedOperation.html#method.send
+    /// [`SelectedOperation::recv`]: struct.SelectedOperation.html#method.recv
     ///
     /// # Examples
     ///
