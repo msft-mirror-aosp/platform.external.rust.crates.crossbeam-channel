@@ -4,11 +4,10 @@ name = "crossbeam-channel"
 # - Update CHANGELOG.md
 # - Update README.md
 # - Create "crossbeam-channel-X.Y.Z" git tag
-version = "0.5.0"
+version = "0.5.1"
 authors = ["The Crossbeam Project Developers"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
-readme = "README.md"
 repository = "https://github.com/crossbeam-rs/crossbeam"
 homepage = "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-channel"
 documentation = "https://docs.rs/crossbeam-channel"
@@ -34,5 +33,5 @@ optional = true
 
 [dev-dependencies]
 num_cpus = "1.13.0"
-rand = "0.7.3"
-signal-hook = "0.1.15"
+rand = "0.8"
+signal-hook = "0.3"
