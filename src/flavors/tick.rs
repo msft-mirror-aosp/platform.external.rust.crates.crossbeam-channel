@@ -12,10 +12,10 @@ use crate::err::{RecvTimeoutError, TryRecvError};
 use crate::select::{Operation, SelectHandle, Token};
 
 /// Result of a receive operation.
-pub(crate) type TickToken = Option<Instant>;
+pub type TickToken = Option<Instant>;
 
 /// Channel that delivers messages periodically.
-pub(crate) struct Channel {
+pub struct Channel {
     /// The instant at which the next message will be delivered.
     delivery_time: AtomicCell<Instant>,
 
@@ -26,7 +26,7 @@ pub(crate) struct Channel {
 impl Channel {
     /// Creates a channel that delivers messages periodically.
     #[inline]
-    pub(crate) fn new(dur: Duration) -> Self {
+    pub fn new(dur: Duration) -> Self {
         Channel {
             delivery_time: AtomicCell::new(Instant::now() + dur),
             duration: dur,
@@ -35,7 +35,7 @@ impl Channel {
 
     /// Attempts to receive a message without blocking.
     #[inline]
-    pub(crate) fn try_recv(&self) -> Result<Instant, TryRecvError> {
+    pub fn try_recv(&self) -> Result<Instant, TryRecvError> {
         loop {
             let now = Instant::now();
             let delivery_time = self.delivery_time.load();
@@ -56,7 +56,7 @@ impl Channel {
 
     /// Receives a message from the channel.
     #[inline]
-    pub(crate) fn recv(&self, deadline: Option<Instant>) -> Result<Instant, RecvTimeoutError> {
+    pub fn recv(&self, deadline: Option<Instant>) -> Result<Instant, RecvTimeoutError> {
         loop {
             let delivery_time = self.delivery_time.load();
             let now = Instant::now();
@@ -85,25 +85,25 @@ impl Channel {
 
     /// Reads a message from the channel.
     #[inline]
-    pub(crate) unsafe fn read(&self, token: &mut Token) -> Result<Instant, ()> {
+    pub unsafe fn read(&self, token: &mut Token) -> Result<Instant, ()> {
         token.tick.ok_or(())
     }
 
     /// Returns `true` if the channel is empty.
     #[inline]
-    pub(crate) fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool {
         Instant::now() < self.delivery_time.load()
     }
 
     /// Returns `true` if the channel is full.
     #[inline]
-    pub(crate) fn is_full(&self) -> bool {
+    pub fn is_full(&self) -> bool {
         !self.is_empty()
     }
 
     /// Returns the number of messages in the channel.
     #[inline]
-    pub(crate) fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         if self.is_empty() {
             0
         } else {
@@ -112,9 +112,8 @@ impl Channel {
     }
 
     /// Returns the capacity of the channel.
-    #[allow(clippy::unnecessary_wraps)] // This is intentional.
     #[inline]
-    pub(crate) fn capacity(&self) -> Option<usize> {
+    pub fn capacity(&self) -> Option<usize> {
         Some(1)
     }
 }
