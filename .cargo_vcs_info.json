@@ -1,5 +1,6 @@
 {
   "git": {
-    "sha1": "b13fdeef2ab90bac1482d38959beadbc6b0a08ed"
-  }
+    "sha1": "f9cec068fa94bced547a66289cd288dca58c2e83"
+  },
+  "path_in_vcs": "crossbeam-channel"
 }
