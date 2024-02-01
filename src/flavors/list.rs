@@ -584,6 +584,17 @@ impl<T> Channel<T> {
         let mut head = self.head.index.load(Ordering::Acquire);
         let mut block = self.head.block.load(Ordering::Acquire);
 
+        // If we're going to be dropping messages we need to synchronize with initialization
+        if head >> SHIFT != tail >> SHIFT {
+            // The block can be null here only if a sender is in the process of initializing the
+            // channel while another sender managed to send a message by inserting it into the
+            // semi-initialized channel and advanced the tail.
+            // In that case, just wait until it gets initialized.
+            while block.is_null() {
+                backoff.snooze();
+                block = self.head.block.load(Ordering::Acquire);
+            }
+        }
         unsafe {
             // Drop all messages between head and tail and deallocate the heap-allocated blocks.
             while head >> SHIFT != tail >> SHIFT {
@@ -593,8 +604,7 @@ impl<T> Channel<T> {
                     // Drop the message in the slot.
                     let slot = (*block).slots.get_unchecked(offset);
                     slot.wait_write();
-                    let p = &mut *slot.msg.get();
-                    p.as_mut_ptr().drop_in_place();
+                    (*slot.msg.get()).assume_init_drop();
                 } else {
                     (*block).wait_next();
                     // Deallocate the block and move to the next one.
@@ -652,8 +662,7 @@ impl<T> Drop for Channel<T> {
                 if offset < BLOCK_CAP {
                     // Drop the message in the slot.
                     let slot = (*block).slots.get_unchecked(offset);
-                    let p = &mut *slot.msg.get();
-                    p.as_mut_ptr().drop_in_place();
+                    (*slot.msg.get()).assume_init_drop();
                 } else {
                     // Deallocate the block and move to the next one.
                     let next = *(*block).next.get_mut();
